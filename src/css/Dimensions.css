@@ -1,18 +1,24 @@
 html {
-  --cell-width: min(9vh, 9vw);
-  --cell-font: min(6vh, 6vw);
+  --navbar-height: 48px;
+  --page-height: calc(100vh - var(--navbar-height));
 }
 .container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: var(--page-height);
   display: flex;
+  flex-direction: column;
+  gap: 12px;
   align-items: center;
   justify-content: center;
 }
 
+/* --grid-size is the number of cells per side, set on the element in Home.tsx. */
 .sudoku {
-  width: min(81vw, 81vh);
-  height: min(81vw, 81vh);
+  --board-size: min(calc(var(--page-height) * 0.81), 81vw);
+  --cell-width: calc(var(--board-size) / var(--grid-size));
+  --cell-font: calc(var(--cell-width) * 2 / 3);
+  width: var(--board-size);
+  height: var(--board-size);
 }
 .row {
   display: flex;
@@ -23,6 +29,7 @@ html {
   align-items: center;
 
   display: flex;
+  box-sizing: border-box;
   font-size: var(--cell-font);
   width: var(--cell-width);
   height: var(--cell-width);

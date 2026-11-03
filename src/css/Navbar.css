@@ -1,0 +1,29 @@
+.navbar {
+  box-sizing: border-box;
+  height: var(--navbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar a {
+  padding: 4px 12px;
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  color: var(--text-h);
+}
+
+.navbar a.active {
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.page {
+  padding: 0 16px;
+}

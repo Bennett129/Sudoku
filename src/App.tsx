@@ -1,167 +1,52 @@
-// import { useState } from "react";
-// import heroImg from "./assets/hero.png";
-// import reactLogo from "./assets/react.svg";
-// import viteLogo from "./assets/vite.svg";
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router";
 import "./App.css";
-import "./sudoku.ts";
-import { Sudoku, Cell } from "./sudoku.ts";
+import Navbar from "./components/Navbar.tsx";
+import {
+  deleteGame,
+  resumeLatestGame,
+  saveGame,
+  startNewGame,
+} from "./memory.ts";
+import History from "./pages/History.tsx";
+import Home from "./pages/Home.tsx";
+import Settings from "./pages/Settings.tsx";
+
+const NEW_GAME_ROWS = 3;
+const NEW_GAME_COLUMNS = 3;
+
 function App() {
-  // const [count, setCount] = useState(0);
+  // Kept here rather than in Home so that switching pages keeps the same puzzle.
+  const [current, setCurrent] = useState(
+    () => resumeLatestGame() ?? startNewGame(NEW_GAME_ROWS, NEW_GAME_COLUMNS),
+  );
+
+  // Saves automatically whenever the game record changes.
+  useEffect(() => {
+    if (!saveGame(current.game)) {
+      console.warn("The sudoku could not be saved.");
+    }
+  }, [current.game]);
+
+  function startOver() {
+    deleteGame(current.game.id);
+    setCurrent(startNewGame(NEW_GAME_ROWS, NEW_GAME_COLUMNS));
+  }
 
   return (
     <>
-      <section className="container">
-        <Table numColumns={9} numRows={9} />
-        {}
-      </section>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={<Home sudoku={current.sudoku} onStartOver={startOver} />}
+        />
+        <Route path="/history" element={<History />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   );
 }
-//
-// function createEmptyGrid({
-//   numRows,
-//   numColumns,
-// }: {
-//   numRows: number;
-//   numColumns: number;
-// }) {
-//   const initialGrid: number[][] = [[]];
-//   for (let i = 0; i < numRows; i++) {
-//     initialGrid[i] = [];
-//     for (let j = 0; j < numColumns; j++) {
-//       initialGrid[i][j] = 0;
-//     }
-//   }
-//   return initialGrid;
-// }
 
-function createInitialSudoku({
-  numRows,
-  numColumns,
-}: {
-  numRows: number;
-  numColumns: number;
-}) {
-  const initialSudoku: number[][] = [[]];
-  for (let i = 0; i < numRows; i++) {
-    initialSudoku[i] = [];
-    for (let j = 0; j < numColumns; j++) {
-      initialSudoku[i][j] = j + 1;
-    }
-  }
-  return initialSudoku;
-}
-function DisplayCell({
-  row = 0,
-  column = 0,
-  numRows = 0,
-  numColumns = 0,
-  children,
-}: {
-  row?: number;
-  column?: number;
-  numRows?: number;
-  numColumns?: number;
-  children: string;
-}) {
-  let classes: string = "";
-  if (row == 0 || row == 3 || row == 6) {
-    classes += "border_top ";
-  }
-  if (row == 2 || row == 5 || row == 8) {
-    classes += "border_bottom ";
-  }
-
-  if (column == 0 || column == 3 || column == 6) {
-    classes += "border_left ";
-  }
-  if (column == 2 || column == 5 || column == 8) {
-    classes += "border_right ";
-  }
-
-  // if (row % numRows != 0 && column % numColumns != 0) {
-  //   return (
-  //     <div key={key} className="cell">
-  //       {children}
-  //     </div>
-  //   );
-  // }
-  return <div className={`cell ${classes}`}>{children}</div>;
-}
-
-// function Table({
-//   numRows,
-//   numColumns,
-// }: {
-//   numRows: number;
-//   numColumns: number;
-// }) {
-//   // const [sudoku, setSudoku] = useState<number[][]>(() =>
-//   //   createInitialSudoku({ numRows, numColumns }),
-//   // );
-//   const sudoku = new Sudoku(3, 3);
-//
-//   return (
-//     <div>
-//       <div>
-//         {sudoku.map((row, i) => (
-//           <div key={i} id={"row" + i} className={"row"}>
-//             {row.map((value, j) => (
-//               <Cell
-//                 numColumns={numColumns}
-//                 numRows={numRows}
-//                 row={i}
-//                 column={j}
-//                 key={String((i - 1) * numColumns + (j - 1))}
-//               >
-//                 {String(value)}
-//               </Cell>
-//             ))}
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-function Table({
-  numRows,
-  numColumns,
-}: {
-  numRows: number;
-  numColumns: number;
-}) {
-  // const [sudoku, setSudoku] = useState<number[][]>(() =>
-  //   createInitialSudoku({ numRows, numColumns }),
-  // );
-  const sudoku = new Sudoku(3, 3);
-
-  return (
-    <div className="sudoku">
-      {sudoku.solutionGrid.map((row, i) => (
-        <div key={i} id={"row" + i} className={"row"}>
-          {row.map((value, j) => (
-            <DisplayCell
-              numColumns={numColumns}
-              numRows={numRows}
-              row={i}
-              column={j}
-              key={String((i - 1) * numColumns + (j - 1))}
-            >
-              {String(sudoku.solutionGrid[i][j].value)}
-            </DisplayCell>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-{
-  /* <div key={j} className="cell"> */
-}
-{
-  /*   {value} */
-}
-{
-  /* </div> */
-}
 export default App;
